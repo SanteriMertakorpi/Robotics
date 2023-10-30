@@ -8,8 +8,8 @@ EXTERNPROTO "../protos/E-puck.proto"
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.12756171707864108 0.09730706116387691 0.9870457660025689 1.850852674312812
-  position 1.0851982995562286 -3.470242370535363 1.3795406938668975
+  orientation -0.27517704759539086 -0.051204231424229765 0.960029019957698 3.4951529835472632
+  position 1.6131156838694896 0.896482910170343 1.0820594373082624
 }
 TexturedBackground {
 }
@@ -21,7 +21,7 @@ RectangleArena {
 E-puck {
 }
 Solid {
-  translation 0.44 -0.6 0
+  translation 0.44 -0.6 -0.009
   children [
     CadShape {
       url [
