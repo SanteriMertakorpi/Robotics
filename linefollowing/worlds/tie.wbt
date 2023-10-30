@@ -1,0 +1,34 @@
+#VRML_SIM R2023b utf8
+
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackground.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
+EXTERNPROTO "../protos/E-puck.proto"
+
+WorldInfo {
+}
+Viewpoint {
+  orientation -0.12756171707864108 0.09730706116387691 0.9870457660025689 1.850852674312812
+  position 1.0851982995562286 -3.470242370535363 1.3795406938668975
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+RectangleArena {
+  floorSize 2 2
+}
+E-puck {
+}
+Solid {
+  translation 0.44 -0.6 0
+  children [
+    CadShape {
+      url [
+        "../protos/Trackki.obj"
+        ""
+        ""
+      ]
+    }
+  ]
+}
