@@ -4,12 +4,13 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/objects/floors/protos/RectangleArena.proto"
 EXTERNPROTO "../protos/E-puck.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/projects/appearances/protos/Parquetry.proto"
 
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.3057104562089315 -0.20836406399812046 -0.9290454960865556 4.270534459880484
-  position 0.996752849218836 -2.779722797027995 1.5019836953262358
+  orientation 0.006596500268377559 0.9995650887350868 -0.02874229577169011 0.450992481687583
+  position -2.712677841230058 0.42908933133383703 1.7917396486593815
 }
 TexturedBackground {
 }
@@ -17,9 +18,23 @@ TexturedBackgroundLight {
 }
 RectangleArena {
   floorSize 2 2
+  floorAppearance Parquetry {
+    type "dark strip"
+  }
 }
 E-puck {
+  hidden position_0_0 -32.981902213144764
+  hidden position_0_1 -32.71310492075316
+  hidden rotation_1 0 1 0 4.717209629932755
+  hidden rotation_2 0 1 0 4.986006922324359
+  translation 0.25799795550449595 0.49290303250097134 -6.396199578702008e-05
+  rotation -8.53197e-11 -2.30527e-10 1 1.38651
   controller "camera_controller"
+  window "generic_window"
+  camera_fieldOfView 0.5
+  camera_width 1080
+  camera_height 1080
+  camera_rotation 0 0 1 -0.1308996938995747
   groundSensorsSlot [
     DistanceSensor {
       type "infra-red"
@@ -28,10 +43,11 @@ E-puck {
 }
 Solid {
   translation 0.44 -0.6 -0.009
+  rotation 0 0 1 1.5708
   children [
     CadShape {
       url [
-        "../protos/Trackki.obj"
+        "../protos/FixedTrack.obj"
         ""
         ""
       ]

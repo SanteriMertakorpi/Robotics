@@ -8,11 +8,12 @@ from controller import Robot
 # P value for P controller
 # High P value makes the robot more agressive
 # Low P values makes the robot more sluggish
-P_COEFFICIENT = 0.1
+P_COEFFICIENT = 0.01
 
 # Initialize the robot
 robot = Robot()
 timestep = int(robot.getBasicTimeStep())
+MAX_VELOCITY =6.28
 
 # Initialize camera
 camera = robot.getDevice('camera')
@@ -26,6 +27,8 @@ motor_right.setPosition(float('inf'))
 motor_left.setVelocity(0)
 motor_right.setVelocity(0)
 
+line_not_found = True
+
 
 # Main control loop
 while robot.step(timestep) != -1:
@@ -33,16 +36,23 @@ while robot.step(timestep) != -1:
 
     # Segment the image by color in HSV color space
     img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
-    mask = cv2.inRange(img, np.array([50, 150, 0]), np.array([200, 230, 255]))
+    mask = cv2.inRange(img, np.array([75, 0, 99]), np.array([179, 62, 255]))
 
     # Find the largest segmented contour (red ball) and it's center
     contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    while line_not_found:
+        motor_left.setVelocity(MAX_VELOCITY)
+        motor_right.setVelocity(0)
+        if len(contours) > 0:
+            line_not_found = False
+    
     largest_contour = max(contours, key=cv2.contourArea)
     largest_contour_center = cv2.moments(largest_contour)
     center_x = int(largest_contour_center['m10'] / largest_contour_center['m00'])
+    center_y = int(largest_contour_center['m01']/ largest_contour_center['m11'])
 
     # Find error (ball distance from image center)
-    error = camera.getWidth() / 2 - center_x
+    
 
     # Use simple proportional controller to follow the ball
     motor_left.setVelocity(- error * P_COEFFICIENT)
