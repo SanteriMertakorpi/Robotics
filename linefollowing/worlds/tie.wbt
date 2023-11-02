@@ -8,8 +8,8 @@ EXTERNPROTO "../protos/E-puck.proto"
 WorldInfo {
 }
 Viewpoint {
-  orientation -0.27517704759539086 -0.051204231424229765 0.960029019957698 3.4951529835472632
-  position 1.6131156838694896 0.896482910170343 1.0820594373082624
+  orientation 0.3057104562089315 -0.20836406399812046 -0.9290454960865556 4.270534459880484
+  position 0.996752849218836 -2.779722797027995 1.5019836953262358
 }
 TexturedBackground {
 }
@@ -19,6 +19,12 @@ RectangleArena {
   floorSize 2 2
 }
 E-puck {
+  controller "camera_controller"
+  groundSensorsSlot [
+    DistanceSensor {
+      type "infra-red"
+    }
+  ]
 }
 Solid {
   translation 0.44 -0.6 -0.009
