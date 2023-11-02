@@ -1,59 +1,95 @@
-
-
+from controller import Robot, Camera
 import cv2
 import numpy as np
-from controller import Robot
 
-
-# P value for P controller
-# High P value makes the robot more agressive
-# Low P values makes the robot more sluggish
-P_COEFFICIENT = 0.01
-
-# Initialize the robot
+# Initialize the Webots robot
 robot = Robot()
 timestep = int(robot.getBasicTimeStep())
-MAX_VELOCITY =6.28
+# Get the camera device and enable it
+camera = robot.getDevice("camera")
+camera.enable(timestep)  # Enable the camera with a sampling period of 32ms
 
-# Initialize camera
-camera = robot.getDevice('camera')
-camera.enable(timestep)
 
-# Initialize motors
-motor_left = robot.getDevice('left wheel motor')
-motor_right = robot.getDevice('right wheel motor')
-motor_left.setPosition(float('inf'))
-motor_right.setPosition(float('inf'))
-motor_left.setVelocity(0)
-motor_right.setVelocity(0)
+# Set motor devices for left and right wheels
+left_motor = robot.getDevice('left wheel motor')
+right_motor = robot.getDevice('right wheel motor')
+left_motor.setPosition(float('inf'))
+right_motor.setPosition(float('inf'))
 
-line_not_found = True
+# Set motor speeds
+max_speed = 6.28  # Maximum motor speed
+base_speed = 2  # Base speed for straight-line motion
 
+def detect_line_position(image):
+    # Convert the image to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+    # Threshold the image to create a binary image where the line is white
+    _, thresholded = cv2.threshold(gray, 185, 255, cv2.THRESH_BINARY)
+
+    # Find contours in the binary image
+    contours, _ = cv2.findContours(thresholded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+    # Initialize variables to store line position
+    line_x = None
+
+    if contours:
+        # Find the largest contour (assuming it's the white line)
+        largest_contour = max(contours, key=cv2.contourArea)
+
+        # Get the centroid of the largest contour
+        M = cv2.moments(largest_contour)
+        if M["m00"] != 0:
+            line_x = int(M["m10"] / M["m00"])
+
+    return line_x
 
 # Main control loop
 while robot.step(timestep) != -1:
-    img = np.frombuffer(camera.getImage(), dtype=np.uint8).reshape((camera.getHeight(), camera.getWidth(), 4))
-
-    # Segment the image by color in HSV color space
-    img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
-    mask = cv2.inRange(img, np.array([75, 0, 99]), np.array([179, 62, 255]))
-
-    # Find the largest segmented contour (red ball) and it's center
-    contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
-    while line_not_found:
-        motor_left.setVelocity(MAX_VELOCITY)
-        motor_right.setVelocity(0)
-        if len(contours) > 0:
-            line_not_found = False
+    # Capture an image from the camera
+    image = camera.getImage()
     
-    largest_contour = max(contours, key=cv2.contourArea)
-    largest_contour_center = cv2.moments(largest_contour)
-    center_x = int(largest_contour_center['m10'] / largest_contour_center['m00'])
-    center_y = int(largest_contour_center['m01']/ largest_contour_center['m11'])
-
-    # Find error (ball distance from image center)
+    # Convert the camera image to a NumPy array for line detection
+    image_data = np.frombuffer(image, np.uint8).reshape((camera.getHeight(), camera.getWidth(), 4))
     
+    # Call the line position detection algorithm
+    line_x = detect_line_position(image_data)
+    
+    if line_x is not None:
+        if line_x <260 and line_x > 220:
+            left_speed = base_speed
+            right_speed = base_speed
+            
+        elif line_x > 260:
+            left_speed = base_speed
+            right_speed = base_speed*0.5
+        elif line_x < 220:
+            left_speed = base_speed*0.5
+            right_speed = base_speed
+            
+        # Calculate an error based on the line's position
+        error = line_x - (camera.getWidth() / 2)
+        
+        # Implement a proportional control to adjust the wheel speeds
+        #left_speed = base_speed - error / (camera.getWidth() / 2)
+        #right_speed = base_speed + error / (camera.getWidth() / 2)
+    else:
+        # No line detected, move forward
+        left_speed = 0
+        right_speed = base_speed
+    
+    # Ensure the speeds are within bounds
+    left_speed = max(-max_speed, min(max_speed, left_speed))
+    right_speed = max(-max_speed, min(max_speed, right_speed))
+    
+    # Set motor speeds
+    left_motor.setVelocity(left_speed)
+    right_motor.setVelocity(right_speed)
+    
+    
+    print("Line position:", line_x)
+    print("Left speed:", left_speed)
+    print("Right Speed:", right_speed)
+    print("Error:", error)
+# Cleanup
 
-    # Use simple proportional controller to follow the ball
-    motor_left.setVelocity(- error * P_COEFFICIENT)
-    motor_right.setVelocity(error * P_COEFFICIENT)
