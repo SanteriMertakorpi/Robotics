@@ -5,10 +5,10 @@ import numpy as np
 # Initialize the Webots robot
 robot = Robot()
 timestep = int(robot.getBasicTimeStep())
+
 # Get the camera device and enable it
 camera = robot.getDevice("camera")
 camera.enable(timestep)  # Enable the camera with a sampling period of 32ms
-
 
 # Set motor devices for left and right wheels
 left_motor = robot.getDevice('left wheel motor')
@@ -19,6 +19,19 @@ right_motor.setPosition(float('inf'))
 # Set motor speeds
 max_speed = 6.28  # Maximum motor speed
 base_speed = 2  # Base speed for straight-line motion
+
+# Set proportional, integral, and derivative gains
+Kp = 0.01
+Ki = 0.0001
+Kd = 0.001
+
+# Define integral saturation limits
+integral_max = 0.5
+integral_min = -0.5
+
+# Define variables for tracking
+last_error = 0
+integral = 0
 
 def detect_line_position(image):
     # Convert the image to grayscale
@@ -48,48 +61,42 @@ def detect_line_position(image):
 while robot.step(timestep) != -1:
     # Capture an image from the camera
     image = camera.getImage()
-    
+
     # Convert the camera image to a NumPy array for line detection
     image_data = np.frombuffer(image, np.uint8).reshape((camera.getHeight(), camera.getWidth(), 4))
-    
+
     # Call the line position detection algorithm
     line_x = detect_line_position(image_data)
-    
+
     if line_x is not None:
-        if line_x <260 and line_x > 220:
-            left_speed = base_speed
-            right_speed = base_speed
-            
-        elif line_x > 260:
-            left_speed = base_speed
-            right_speed = base_speed*0.5
-        elif line_x < 220:
-            left_speed = base_speed*0.5
-            right_speed = base_speed
-            
-        # Calculate an error based on the line's position
+        # Calculate the error based on the line's position
         error = line_x - (camera.getWidth() / 2)
-        
-        # Implement a proportional control to adjust the wheel speeds
-        #left_speed = base_speed - error / (camera.getWidth() / 2)
-        #right_speed = base_speed + error / (camera.getWidth() / 2)
+
+        # Calculate the integral of the error (use it to reduce oscillations)
+        integral += error
+
+        # Calculate the derivative of the error (use it to reduce overshooting)
+        derivative = error - last_error
+
+        # Calculate motor speeds based on PID control
+        left_speed = base_speed + (Kp * error + Ki * integral + Kd * derivative)
+        right_speed = base_speed - (Kp * error + Ki * integral + Kd * derivative)
+
+        # Limit the integral term
+        integral = max(integral_min, min(integral_max, integral))
+
+        # Update the last error for the next iteration
+        last_error = error
+
     else:
-        # No line detected, move forward
-        left_speed = 0
-        right_speed = base_speed
-    
+        # No line detected, stop the robot
+        left_speed = 2
+        right_speed = 0
+
     # Ensure the speeds are within bounds
     left_speed = max(-max_speed, min(max_speed, left_speed))
     right_speed = max(-max_speed, min(max_speed, right_speed))
-    
+
     # Set motor speeds
     left_motor.setVelocity(left_speed)
     right_motor.setVelocity(right_speed)
-    
-    
-    print("Line position:", line_x)
-    print("Left speed:", left_speed)
-    print("Right Speed:", right_speed)
-    print("Error:", error)
-# Cleanup
-
