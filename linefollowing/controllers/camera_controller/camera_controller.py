@@ -124,7 +124,7 @@ while robot.step(timestep) != -1:
         # Calculate the error based on the line's position
         error = line_x - (camera.getWidth() / 2)
 
-        # Calculate the integral of the error (use it to reduce oscillations)
+        # Calculate the integral of the error (use it to reduce build-up of incorrect movements)
         integral += error
 
         # Calculate the derivative of the error (use it to reduce overshooting)
@@ -136,6 +136,8 @@ while robot.step(timestep) != -1:
 
         # Limit the integral term
         integral = max(integral_min, min(integral_max, integral))
+        
+        #The above snippet is especially important if the track has many sections which cause errors
 
         # Update the last error for the next iteration
         last_error = error
@@ -152,3 +154,14 @@ while robot.step(timestep) != -1:
     # Set motor speeds
     left_motor.setVelocity(left_speed)
     right_motor.setVelocity(right_speed)
+    
+    
+    
+    #Difficulties:
+    #Constructing a world which is usable by the camera
+    #-Limiting sensor data to just the camera
+    #-Movement combined with directional steering
+    #-getting even somewhat accurate turns in corners
+    #-Configuring the camera node so it can actually support object recognition
+    #-Adding the display to read current speed in real-time
+    #
