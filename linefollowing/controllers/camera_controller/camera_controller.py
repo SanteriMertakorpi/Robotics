@@ -6,9 +6,23 @@ import numpy as np
 robot = Robot()
 timestep = int(robot.getBasicTimeStep())
 
+#Assign the LED-lights on the puck for use later
+led1 = robot.getDevice('led0')
+led2 = robot.getDevice('led1')
+
+speedometer= robot.getDevice('display')
+speedometer.setFont('Arial',10,1)
+
+
+#Same for the speaker
+speaker = robot.getDevice('speaker')
+
 # Get the camera device and enable it
 camera = robot.getDevice("camera")
-camera.enable(timestep)  # Enable the camera with a sampling period of 32ms
+camera.enable(timestep)  # Enable the camera with a sampling period of once every timestep
+camera.recognitionEnable(timestep)
+
+
 
 # Set motor devices for left and right wheels
 left_motor = robot.getDevice('left wheel motor')
@@ -60,8 +74,46 @@ def detect_line_position(image):
 # Main control loop
 while robot.step(timestep) != -1:
     # Capture an image from the camera
+    
+    
     image = camera.getImage()
-
+    
+    
+    #Updating the speedometer
+    #There's no way to clear the display so we redraw a rectangle that fills the display, then draw text
+    speedometer.setColor(000000)
+    speedometer.fillRectangle(0,0,speedometer.getWidth(),speedometer.getHeight())
+    
+    speedometer.setColor(111111)
+    speed=str(base_speed)
+    speedometer.drawText(('Current speed: '+speed),40,5)
+    
+    if(camera.getRecognitionNumberOfObjects() != 0): #Check if camera sees an object
+    
+    #Assign the first object from the recognized objects array to a value
+        firstObject = camera.getRecognitionObjects()[0] 
+        if(firstObject):
+            
+            purpose=firstObject.getModel() #finding out which block is seen
+            
+        
+            if(purpose=='slowdown'):      #If seen block is red, slow down and play metallica          
+                base_speed=1.5
+                led2.set(1)
+                speaker.playSound(speaker,speaker,'goslow.wav',0.5,1,0,0)
+            elif(purpose=='acceleration'):
+                base_speed=3                
+                led1.set(1)
+                speaker.playSound(speaker,speaker,'gofast.wav',0.5,1,0,0)
+                #If seen block is green, speed up and play eurobeat
+                
+    else:        
+        speaker.stop()   #Base condition, do this if nothing except the line is visible
+        base_speed=2
+        led1.set(0)
+        led2.set(0)  
+            
+    
     # Convert the camera image to a NumPy array for line detection
     image_data = np.frombuffer(image, np.uint8).reshape((camera.getHeight(), camera.getWidth(), 4))
 
@@ -89,7 +141,7 @@ while robot.step(timestep) != -1:
         last_error = error
 
     else:
-        # No line detected, stop the robot
+        # No line detected, do a little spin to find one
         left_speed = 2
         right_speed = 0
 
