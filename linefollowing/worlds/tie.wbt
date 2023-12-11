@@ -22,7 +22,7 @@ RectangleArena {
   floorAppearance Appearance {
     texture ImageTexture {
       url [
-        "D:/Downloads/trackPaint.png"
+        "../protos/trackPaint.png"
       ]
     }
   }
@@ -188,8 +188,6 @@ Robot {
           density -1
           mass 0.005
         }
-        linearVelocity 0.05998860414614915 -2.9058982420339217e-06 4.9956926984683584e-12
-        angularVelocity 0.00014532716983515985 2.9994306680748033 -3.891807804418474e-05
       }
     }
     HingeJoint {
@@ -224,8 +222,6 @@ Robot {
         name "right wheel"
         boundingObject USE EPUCK_WHEEL_BOUNDING_OBJECT
         physics USE EPUCK_WHEEL_PHYSICS
-        linearVelocity 0.059986622384374404 -2.905662184287979e-06 -2.975175658732815e-12
-        angularVelocity 0.00014525094335343704 2.9993306688072363 -3.9067365277868036e-05
       }
     }
     DEF BATTERY_CONNECTOR Pose {
@@ -1286,7 +1282,6 @@ Robot {
             baseColor 0.8 0.8 0.8
             roughness 0.2
             metalness 0.5
-            emissiveColor 0.215686 1 0
             emissiveIntensity 100
           }
           geometry DEF EPUCK_LED_GEOMETRY Box {
@@ -1629,8 +1624,6 @@ Robot {
   controller "camera_controller"
   cpuConsumption 1.11
   remoteControl "e-puck_bluetooth"
-  linearVelocity 0.059990709746390064 -2.9057333878622923e-06 1.171017913805975e-09
-  angularVelocity 2.138551676972276e-08 -0.0006193280378531703 -3.812495902376054e-05
 }
 Solid {
   translation 0.76 -0.75 0.1
