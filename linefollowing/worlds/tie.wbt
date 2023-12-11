@@ -7,8 +7,8 @@ EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/R2023b/project
 WorldInfo {
 }
 Viewpoint {
-  orientation 0.22137534861413902 0.22809292289294883 -0.9481384780463873 1.5941554840850782
-  position 0.1899396598651517 2.806277205282942 1.4831328073735828
+  orientation 0.17056348569336346 0.23179520100140316 -0.9576946706236017 1.3102739806495314
+  position -1.2227825737841618 2.2966910086235823 1.1165769474299283
 }
 TexturedBackground {
 }
@@ -28,8 +28,8 @@ RectangleArena {
   }
 }
 Robot {
-  translation 0.33050202043294985 -0.06709347287246648 0.049929133987356704
-  rotation 0.0004052396835952021 -0.00027683250462986965 -0.9999998795722744 -2.69533499241008
+  translation 0.22889271028301378 0.3418774832050798 0.04993603908275635
+  rotation 0.00021331290070360868 0.9877119258170203 0.15628533551309132 -0.0003144944249271475
   children [
     Display {
       locked TRUE
@@ -38,7 +38,7 @@ Robot {
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position 4185.036823413591
+        position 5511.763596989483
         axis 0 1 0
         anchor 0 0 0.02
       }
@@ -47,6 +47,7 @@ Robot {
           name "left wheel motor"
           consumptionFactor -0.001
           maxVelocity 6.28
+          sound ""
         }
         PositionSensor {
           name "left wheel sensor"
@@ -54,8 +55,8 @@ Robot {
         }
       ]
       endPoint DEF EPUCK_LEFT_WHEEL Solid {
-        translation 0 0.025999999999999652 0.02
-        rotation 0 1 0 0.4354088319866705
+        translation 0 0.025999999999999548 0.02
+        rotation 0 -1 0 4.873102714194205
         children [
           DEF EPUCK_WHEEL Pose {
             rotation 1 0 0 -1.570796
@@ -187,13 +188,13 @@ Robot {
           density -1
           mass 0.005
         }
-        linearVelocity -0.029005390018242462 0.014069864666517612 -3.1409403900868184e-07
-        angularVelocity -0.6870352224643986 -1.421854059692355 0.2993431119509704
+        linearVelocity 0.05998860414614915 -2.9058982420339217e-06 4.9956926984683584e-12
+        angularVelocity 0.00014532716983515985 2.9994306680748033 -3.891807804418474e-05
       }
     }
     HingeJoint {
       jointParameters HingeJointParameters {
-        position 3917.653637239993
+        position 5144.601451499296
         axis 0 1 0
         anchor 0 0 0.02
       }
@@ -202,6 +203,7 @@ Robot {
           name "right wheel motor"
           consumptionFactor -0.001
           maxVelocity 6.28
+          sound ""
         }
         PositionSensor {
           name "right wheel sensor"
@@ -209,8 +211,8 @@ Robot {
         }
       ]
       endPoint DEF EPUCK_RIGHT_WHEEL Solid {
-        translation 0 -0.025999999999999794 0.02
-        rotation 0 -0.9999999999999999 0 3.0539944400691574
+        translation 0 -0.02600000000000007 0.02
+        rotation 0 1 0 4.955870226394024
         children [
           Pose {
             rotation 1 0 0 3.14159
@@ -222,8 +224,8 @@ Robot {
         name "right wheel"
         boundingObject USE EPUCK_WHEEL_BOUNDING_OBJECT
         physics USE EPUCK_WHEEL_PHYSICS
-        linearVelocity -0.042981768321643694 0.020785896093090013 -4.1947860183235974e-07
-        angularVelocity -1.0553738395678987 -2.181799936132199 0.30436918345998615
+        linearVelocity 0.059986622384374404 -2.905662184287979e-06 -2.975175658732815e-12
+        angularVelocity 0.00014525094335343704 2.9993306688072363 -3.9067365277868036e-05
       }
     }
     DEF BATTERY_CONNECTOR Pose {
@@ -1284,6 +1286,7 @@ Robot {
             baseColor 0.8 0.8 0.8
             roughness 0.2
             metalness 0.5
+            emissiveColor 0.215686 1 0
             emissiveIntensity 100
           }
           geometry DEF EPUCK_LED_GEOMETRY Box {
@@ -1626,8 +1629,8 @@ Robot {
   controller "camera_controller"
   cpuConsumption 1.11
   remoteControl "e-puck_bluetooth"
-  linearVelocity -0.03595824394656133 0.017413518318577566 2.0154621006484887e-05
-  angularVelocity 6.092471448445375e-05 -0.0015520546537896225 0.2966519106965815
+  linearVelocity 0.059990709746390064 -2.9057333878622923e-06 1.171017913805975e-09
+  angularVelocity 2.138551676972276e-08 -0.0006193280378531703 -3.812495902376054e-05
 }
 Solid {
   translation 0.76 -0.75 0.1

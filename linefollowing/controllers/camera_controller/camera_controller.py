@@ -35,9 +35,9 @@ max_speed = 6.28  # Maximum motor speed
 base_speed = 2  # Base speed for straight-line motion
 
 # Set proportional, integral, and derivative gains
-Kp = 0.01
-Ki = 0.0001
-Kd = 0.001
+Kp = 0.01  #Lower if robot overshoots on corrective turns
+Ki = 0.0001 #eliminating long-term drift and bias, lower if unstable
+Kd = 0.001 #reducing oscillations
 
 # Define integral saturation limits
 integral_max = 0.5
@@ -55,7 +55,7 @@ def detect_line_position(image):
     _, thresholded = cv2.threshold(gray, 185, 255, cv2.THRESH_BINARY)
 
     # Find contours in the binary image
-    contours, _ = cv2.findContours(thresholded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours,_ = cv2.findContours(thresholded, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     # Initialize variables to store line position
     line_x = None
@@ -80,7 +80,8 @@ while robot.step(timestep) != -1:
     
     
     #Updating the speedometer
-    #There's no way to clear the display so we redraw a rectangle that fills the display, then draw text
+    #There's no way to clear the display so we redraw a rectangle that fills the display,
+    #then draw text
     speedometer.setColor(000000)
     speedometer.fillRectangle(0,0,speedometer.getWidth(),speedometer.getHeight())
     
@@ -92,7 +93,7 @@ while robot.step(timestep) != -1:
     
     #Assign the first object from the recognized objects array to a value
         firstObject = camera.getRecognitionObjects()[0] 
-        if(firstObject):
+        if(firstObject is not None):
             
             purpose=firstObject.getModel() #finding out which block is seen
             
@@ -137,9 +138,9 @@ while robot.step(timestep) != -1:
         # Limit the integral term
         integral = max(integral_min, min(integral_max, integral))
         
-        #The above snippet is especially important if the track has many sections which cause errors
+        #The above snippet is important if the track has many sections which cause errors
 
-        # Update the last error for the next iteration
+        # Update the last error
         last_error = error
 
     else:
@@ -159,7 +160,7 @@ while robot.step(timestep) != -1:
     
     #Difficulties:
     #Constructing a world which is usable by the camera
-    #-Limiting sensor data to just the camera
+    #-(obviously) using just the camera for input data
     #-Movement combined with directional steering
     #-getting even somewhat accurate turns in corners
     #-Configuring the camera node so it can actually support object recognition
